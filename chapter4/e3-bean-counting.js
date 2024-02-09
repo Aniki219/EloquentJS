@@ -9,7 +9,9 @@ function countBs(string) {
 function countChar(string, character) {
   let numChars = 0;
   for (i = 0; i < string.length; i++) {
-    if (string[i] === character) numChars++;
+    if (string[i] === character) {
+      numChars++;
+    }
   }
   return numChars;
 }
