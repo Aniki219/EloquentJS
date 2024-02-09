@@ -1,7 +1,9 @@
 function countBs(string) {
   let numBs = 0;
   for (i = 0; i < string.length; i++) {
-    if (string[i] === "B") numBs++;
+    if (string[i] === "B") {
+      numBs++;
+    }
   }
   return numBs;
 }
