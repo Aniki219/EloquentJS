@@ -9,9 +9,9 @@ function range(from, to, step = 1) {
     throw new Error("Step size must be negative for provided range.");
   }
   let arr = [];
-  let totalSteps = Math.abs((from - to) / step) + 1;
-  for (let i = 0; i < totalSteps; i++) {
-    arr[i] = from + i * step;
+  stepSign = Math.sign(step);
+  for (let i = from; i * stepSign <= to * stepSign; i+=step) {
+    arr[i] = i;
   }
   return arr;
 }

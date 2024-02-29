@@ -1,13 +1,12 @@
 function arrayToList(arr) {
-  function addValueToList(arr) {
-    if (arr.length === 1) {
-      return {value: arr[0], rest: null};
+  function addValueToList(index) {
+    if (index === arr.length - 1) {
+      return {value: arr[index], rest: null};
     }
-    let nextVal = arr.shift();
-    return {value: nextVal, rest: addValueToList(arr)}
+    return {value: arr[index], rest: addValueToList(index+1)}
   }
 
-  return addValueToList(arr);
+  return addValueToList(0);
 }
 
 function listToArray(list) {
