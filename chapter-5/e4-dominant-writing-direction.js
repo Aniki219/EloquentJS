@@ -1,6 +1,7 @@
 function dominantDirection(text) {
   let scriptCounts = countBy(text, scriptDirectionFromChar);
-  let dominantCount = scriptCounts.reduce((c1, c2) => c1.count > c2.count ? c1 : c2);
+  let scriptCountsArray = Array.from(scriptCounts, ([name, count]) => ({name, count}));
+  let dominantCount = scriptCountsArray.reduce((c1, c2) => c1.count > c2.count ? c1 : c2);
   return dominantCount.name;
 }
 
@@ -14,8 +15,9 @@ console.log(dominantDirection("Hello!"));
 console.log(dominantDirection("Hey, مساء الخير"));
 // → rtl
 
-/* takes in a character code and returns the script object
-  that corresponds to the given character
+/**
+  Takes in a character code and returns the script object that corresponds to
+  the given character
 */
 function characterScript(code) {
   for (let script of SCRIPTS) {
@@ -28,21 +30,23 @@ function characterScript(code) {
   return null;
 }
 
-/* takes an array of items and a function that
-  generates a group name for a given item and returns
-  an array of count objects listing the unique
-  group name and the number of times this group
-  occurs in the array.
+/**
+  Takes an array of items and a function that generates a group name for a given item and returns
+  a Map object whose keys are unique group names and whose values represent the number of occurences
+  of those group names.
 */
 function countBy(items, groupName) {
-  let counts = [];
+  let counts = new Map();
   for (let item of items) {
     let name = groupName(item);
-    let known = counts.findIndex(c => c.name == name);
-    if (known == -1) {
-      counts.push({name, count: 1});
+    if (name === null) {
+      continue;
+    }
+    let known = counts.has(name);
+    if (!known) {
+      counts.set(name, 1);
     } else {
-      counts[known].count++;
+      counts.set(name, counts.get(name) + 1);
     }
   }
   return counts;
