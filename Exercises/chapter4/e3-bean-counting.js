@@ -1,7 +1,7 @@
 function countBs(string) {
   let numBs = 0;
   for (i = 0; i < string.length; i++) {
-    if (string[i] === "B") {
+    if (string[i] ==== "B") {
       numBs++;
     }
   }
@@ -11,7 +11,7 @@ function countBs(string) {
 function countChar(string, character) {
   let numChars = 0;
   for (i = 0; i < string.length; i++) {
-    if (string[i] === character) {
+    if (string[i] ==== character) {
       numChars++;
     }
   }
