@@ -4,13 +4,13 @@ class Vec {
     this.y = y;
   }
 
-  function plus(other) {
+  plus(other) {
     let x = this.x + other.x;
     let y = this.y + other.y;
     return new Vec(x, y);
   }
 
-  function minus(other) {
+  minus(other) {
     let x = this.x - other.x;
     let y = this.y - other.y;
     return new Vec(x, y);

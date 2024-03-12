@@ -1,29 +1,31 @@
 class Group {
   constructor() {
-    this.group = [];
+    this.values = [];
   }
 
   static from(array) {
+    let group = new Group();
     for (let e of array) {
-      this.add(e));
+      group.add(e);
     }
+    return group;
   }
 
   add(value) {
-    if (this.has(value)) {
-      this.group.push(value);
+    if (!this.has(value)) {
+      this.values.push(value);
     }
   }
 
   delete(value) {
-    let indexToDelete = this.group.indexOf(value);
+    let indexToDelete = this.values.indexOf(value);
     if (indexToDelete !== -1) {
-      this.group.splice(indexToDelete, 1);
+      this.values.splice(indexToDelete, 1);
     }
   }
 
   has(value) {
-    return this.group.indexOf(value) !== -1;
+    return this.values.indexOf(value) !== -1;
   }
 }
 
@@ -32,7 +34,12 @@ console.log(group.has(10) && group.has(20));
 // → true
 console.log(group.has(30));
 // → false
-group.add(10);
-group.delete(10);
-console.log(group.has(10));
+
+group.add(5);
+console.log(group.has(5));
+// → true
+
+group.add(5);
+group.delete(5);
+console.log(group.has(5));
 // → false

@@ -5,7 +5,9 @@ class Group {
 
   static from(array) {
     let group = new Group();
-    array.forEach(e => group.add(e));
+    for (let e of array) {
+      group.add(e);
+    }
     return group;
   }
 
@@ -24,14 +26,6 @@ class Group {
 
   has(value) {
     return this.values.indexOf(value) !== -1;
-  }
-}
-
-class IterableGroup extends Group {
-  static from(array) {
-    let group = new IterableGroup();
-    array.forEach(e => group.add(e));
-    return group;
   }
 
   [Symbol.iterator]() {
@@ -57,14 +51,14 @@ class GroupIterator {
   }
 }
 
-for (let value of IterableGroup.from(["a", "b", "c"])) {
+for (let value of Group.from(["a", "b", "c"])) {
   console.log(value);
 }
 // → a
 // → b
 // → c
 
-let igroup = IterableGroup.from(["rooster", "bear", "hawk"]);
+let igroup = Group.from(["rooster", "bear", "hawk"]);
 igroup.delete("rooster");
 igroup.add("rooster");
 for (let value of igroup) {
