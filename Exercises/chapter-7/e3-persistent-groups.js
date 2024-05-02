@@ -1,25 +1,25 @@
 class PGroup {
-  values = [];
-  static empty = new PGroup([]);
+    values = [];
+    static empty = new PGroup([]);
 
-  constructor(values) {
-    this.values = values;
-  }
-
-  has(value) {
-    return this.values.includes(value);
-  }
-
-  add(value) {
-    if (this.has(value)) {
-      return this;
+    constructor(values) {
+        this.values = values;
     }
-    return new PGroup(this.values.concat(value));
-  }
 
-  delete(value) {
-    return new PGroup(this.values.filter(v => v !== value));
-  }
+    has(value) {
+        return this.values.includes(value);
+    }
+
+    add(value) {
+    if (this.has(value)) {
+        return this;
+    }
+        return new PGroup(this.values.concat(value));
+    }
+
+    delete(value) {
+        return new PGroup(this.values.filter(v => v !== value));
+    }
 }
 
 let a = PGroup.empty.add("a");
