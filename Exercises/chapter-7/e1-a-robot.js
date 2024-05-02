@@ -9,7 +9,7 @@ const roads = [
 ];
 
 function buildGraph(edges) {
-  let graph = Object.create(null);
+  const graph = Object.create(null);
   function addEdge(from, to) {
     if (from in graph) {
       graph[from].push(to);
@@ -32,22 +32,25 @@ class VillageState {
     this.parcels = parcels;
   }
 
-  move(destination) {
+move(destination) {
     if (!roadGraph[this.place].includes(destination)) {
-      return this;
+        return this;
     } else {
-      let parcels = this.parcels.map(p => {
-        if (p.place != this.place) return p;
-        return {place: destination, address: p.address};
-      }).filter(p => p.place != p.address);
-      return new VillageState(destination, parcels);
+        const parcels = this.parcels.map(p => {
+            if (p.place !== this.place) {
+                return p;
+            }
+            return {place: destination, address: p.address};
+        }).filter(p => p.place !== p.address);
+
+        return new VillageState(destination, parcels);
     }
-  }
+}
 
   static random(parcelCount = 5) {
-    let parcels = [];
+    const parcels = [];
     for (let i = 0; i < parcelCount; i++) {
-      let address = randomPick(Object.keys(roadGraph));
+      const address = randomPick(Object.keys(roadGraph));
       let place;
       do {
         place = randomPick(Object.keys(roadGraph));
@@ -63,7 +66,7 @@ function runRobot(state, robot, memory) {
     if (state.parcels.length === 0) {
       return turn;
     }
-    let action = robot(state, memory);
+    const action = robot(state, memory);
     state = state.move(action.direction);
     memory = action.memory;
 
@@ -77,13 +80,13 @@ function runRobot(state, robot, memory) {
 }
 
 function randomPick(array) {
-  let choice = Math.floor(Math.random() * array.length);
+  const choice = Math.floor(Math.random() * array.length);
   return array[choice];
 }
 function findRoute(graph, from, to) {
-  let work = [{at: from, route: []}];
+  const work = [{at: from, route: []}];
   for (let i = 0; i < work.length; i++) {
-    let {at, route} = work[i];
+    const {at, route} = work[i];
     for (let place of graph[at]) {
       if (place === to) return route.concat(place);
       if (!work.some(w => w.at === place)) {
@@ -111,8 +114,8 @@ function routeRobot(state, memory) {
 }
 function goalOrientedRobot({place, parcels}, route) {
   if (route.length === 0) {
-    let parcel = parcels[0];
-    if (parcel.place != place) {
+    const parcel = parcels[0];
+    if (parcel.place !== place) {
       route = findRoute(roadGraph, place, parcel.place);
     } else {
       route = findRoute(roadGraph, place, parcel.address);
@@ -127,25 +130,20 @@ function goalOrientedRobot({place, parcels}, route) {
   delivered.
 */
 function closestParcelsRobot({place, parcels}, route) {
-  if (route.length === 0) {
-    if (parcels.some(p => p.place != place)) {
-      let closestParcel = parcels
-        .filter(p => p.place !== place)
-        .map(parcel => {
-          route = findRoute(roadGraph, place, parcel.place);
-          return route
-        })
-        .reduce((r1, r2) => r1.length <= r2 ? r1 : r2);
-      route = closestParcel;
-    } else {
-      let closestAddress = parcels.map(parcel => {
-        route = findRoute(roadGraph, place, parcel.address);
-        return route
-      }).reduce((r1, r2) => r1.length <= r2 ? r1 : r2);
-      route = closestAddress;
+    if (route.length > 0) {
+        return {direction: route[0], memory: route.slice(1)};
     }
-  }
-  return {direction: route[0], memory: route.slice(1)};
+
+    const uncollectedParcels = parcels.filter(p => p.place !== place)
+    if (uncollectedParcels.length > 0) {
+        route = uncollectedParcels.map(parcel => findRoute(roadGraph, place, parcel.place))
+                                  .reduce((r1, r2) => r1.length <= r2.length ? r1 : r2);
+    } else {
+        route = parcels.map(parcel => findRoute(roadGraph, place, parcel.address))
+                       .reduce((r1, r2) => r1.length <= r2.length ? r1 : r2);
+    }
+  
+    return {direction: route[0], memory: route.slice(1)};
 }
 
 /**
@@ -154,15 +152,14 @@ function closestParcelsRobot({place, parcels}, route) {
 */
 function closestParcelOrAddressRobot({place, parcels}, route) {
   if (route.length === 0) {
-    route = parcels
-      .map(parcel => {
-        if (parcel.place != place) {
-          return findRoute(roadGraph, place, parcel.place);
-        } else {
-          return findRoute(roadGraph, place, parcel.address);
-        }
-      })
-      .reduce((r1, r2) => r1.length <= r2 ? r1 : r2);
+    const uncollectedParcels = parcels.filter(p => p.place !== place);
+    const undeliveredParcels = parcels.filter(p => p.place === place);
+
+    const parcelRoutes = uncollectedParcels.map(parcel => findRoute(roadGraph, place, parcel.place));
+    const deliveryRoutes = undeliveredParcels.map(parcel => findRoute(roadGraph, place, parcel.address));
+    
+    route = parcelRoutes.concat(deliveryRoutes)
+                        .reduce((r1, r2) => r1.length <= r2.length ? r1 : r2);
   }
   return {direction: route[0], memory: route.slice(1)};
 }
@@ -171,22 +168,27 @@ function compareRobots(robot1, memory1, robot2, memory2) {
   let robot1turns = 0;
   let robot2turns = 0;
   for (let i = 0; i < 100; i++) {
-    let task = VillageState.random();
+    const task = VillageState.random();
     robot1turns += runRobot(task, robot1, memory1);
     robot2turns += runRobot(task, robot2, memory2);
   }
-  let robot1AvgTurns = Math.round(robot1turns/100);
-  let robot2AvgTurns = Math.round(robot2turns/100);
+  const robot1AvgTurns = Math.round(robot1turns/100);
+  const robot2AvgTurns = Math.round(robot2turns/100);
   console.log(`Robot1 took an average of ${robot1AvgTurns} turns.`);
   console.log(`Robot2 took an average of ${robot2AvgTurns} turns.`);
 }
 
 compareRobots(routeRobot, [], goalOrientedRobot, []);
 // Robot1 took an average of 18 turns.
-// Robot2 took an average of 16 turns.
+// Robot2 took an average of 15 turns.
 compareRobots(goalOrientedRobot, [], closestParcelsRobot, []);
 // Robot1 took an average of 15 turns.
-// Robot2 took an average of 14 turns.
+// Robot2 took an average of 12 turns.
 compareRobots(closestParcelOrAddressRobot, [], closestParcelsRobot, []);
-// Robot1 took an average of 15 turns.
-// Robot2 took an average of 13 turns.
+// Robot1 took an average of 12 turns.
+// Robot2 took an average of 12 turns.
+
+// routeRobot -> 18 turns
+// goalOriented -> 15 turns
+// closestParcels -> 12 turns
+// closestParcelOrAddress -> 12 turns

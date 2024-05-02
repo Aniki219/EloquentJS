@@ -12,7 +12,7 @@ class PGroup {
 
   add(value) {
     if (this.has(value)) {
-      return new PGroup(this.values);
+      return this;
     }
     return new PGroup(this.values.concat(value));
   }
