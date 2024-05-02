@@ -11,5 +11,4 @@ const roads = [
 ];
 
 const roadsArray = roads.map((roadpair) => roadpair.split("-"));
-
 export const roadsGraph = buildGraph(roadsArray);

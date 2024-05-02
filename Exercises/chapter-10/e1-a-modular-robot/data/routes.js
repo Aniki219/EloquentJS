@@ -1,3 +1,5 @@
+import buildGraph from "../algos/buildGraph";
+
 export const mailRoute = [
     "Alice's House", "Cabin", "Alice's House", "Bob's House",
     "Town Hall", "Daria's House", "Ernie's House",
@@ -14,3 +16,5 @@ export const roads = [
     "Marketplace-Post Office",     "Marketplace-Shop",
     "Marketplace-Town Hall",       "Shop-Town Hall"
 ];
+
+export const roadGraph = buildGraph(roads);
