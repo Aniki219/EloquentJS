@@ -11,9 +11,9 @@ class PGroup {
     }
 
     add(value) {
-    if (this.has(value)) {
-        return this;
-    }
+        if (this.has(value)) {
+            return this;
+        }
         return new PGroup(this.values.concat(value));
     }
 

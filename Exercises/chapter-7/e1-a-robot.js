@@ -10,6 +10,7 @@ const roads = [
 
 function buildGraph(edges) {
     const graph = Object.create(null);
+
     function addEdge(from, to) {
         if (from in graph) {
             graph[from].push(to);
@@ -17,6 +18,7 @@ function buildGraph(edges) {
             graph[from] = [to];
         }
     }
+
     for (let [from, to] of edges.map(r => r.split("-"))) {
         addEdge(from, to);
         addEdge(to, from);
@@ -35,16 +37,17 @@ class VillageState {
     move(destination) {
         if (!roadGraph[this.place].includes(destination)) {
             return this;
-        } else {
-            const parcels = this.parcels.map(p => {
-                if (p.place !== this.place) {
-                    return p;
-                }
-                return {place: destination, address: p.address};
-            }).filter(p => p.place !== p.address);
+        } 
+        
+        const parcels = this.parcels.map(p => {
+            if (p.place !== this.place) {
+                return p;
+            }
+            return {place: destination, address: p.address};
+        }).filter(p => p.place !== p.address);
 
-            return new VillageState(destination, parcels);
-        }
+        return new VillageState(destination, parcels);
+        
     }
 
     static random(parcelCount = 5) {
@@ -52,10 +55,10 @@ class VillageState {
         for (let i = 0; i < parcelCount; i++) {
             const address = randomPick(Object.keys(roadGraph));
 
-            let place;
-            do {
+            let place = randomPick(Object.keys(roadGraph));
+            while (place === address) {
                 place = randomPick(Object.keys(roadGraph));
-            } while (place === address);
+            }
             
             parcels.push({place, address});
         }
@@ -65,6 +68,7 @@ class VillageState {
 
 function runRobot(state, robot, memory) {
     const max_turns = 50;
+
     for (let turn = 0; t < max_turns; turn++) {
         if (state.parcels.length === 0) {
             return turn;
@@ -74,6 +78,7 @@ function runRobot(state, robot, memory) {
         state = state.move(action.direction);
         memory = action.memory;
     }
+
     console.log("Maximum Turns Reached!", state);
     return;
 }
@@ -85,12 +90,15 @@ function randomPick(array) {
 
 function findRoute(graph, from, to) {
     const work = [{at: from, route: []}];
+
     for (let i = 0; i < work.length; i++) {
         const {at, route} = work[i];
+
         for (let place of graph[at]) {
             if (place === to) {
                 return route.concat(place);
             }
+
             if (!work.some(w => w.at === place)) {
                 work.push({at: place, route: route.concat(place)});
             }
@@ -139,12 +147,11 @@ function goalOrientedRobot({place, parcels}, route) {
     delivered.
 */
 function closestParcelsRobot({place, parcels}, route) {
-    //using guard clause requires duplicate return statement
     if (route.length > 0) {
         return {direction: route[0], memory: route.slice(1)};
     }
 
-    const uncollectedParcels = parcels.filter(p => p.place !== place)
+    const uncollectedParcels = parcels.filter(p => p.place !== place);
     if (uncollectedParcels.length > 0) {
         route = uncollectedParcels.map(parcel => findRoute(roadGraph, place, parcel.place))
             .reduce((r1, r2) => r1.length <= r2.length ? r1 : r2);
